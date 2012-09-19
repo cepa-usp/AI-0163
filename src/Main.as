@@ -4,6 +4,7 @@ package
 	import away3d.containers.Scene3D;
 	import away3d.containers.View3D;
 	import away3d.loaders.Loader3D;
+	import fl.controls.Slider;
 	import flash.events.Event;
 	import flash.geom.Matrix;
 	import flash.geom.Matrix3D;
@@ -63,33 +64,62 @@ package
 			//CamadaEletrons(modelo.object3d).startAnimation();
 			
 			//TO DO: ler todos os markers aqui
-			var marker:FlarMark = new FlarMark("./resources/marker/flarlogo.pat", 80);
-			marker.fileId = setSketchFile(marker.source, URLLoaderDataFormat.TEXT);
-			//marker.loadModel("./resources/model/earth.3ds");
-			marker.modelo = modelo;
-			marker.rotateVector = new Vector3D(1, 0, 0);
-			marker.rotateAngle = 90;
+			var largura:Number = 70;
+			var markerWH:Number = 60;
 			
-			//modeloLente = new Modelo3d();
-			//modeloLente.object3d = new Lente();
-			/*
-			var marker2:FlarMark = new FlarMark("./resources/marker/teste.pat", 80);
+			var marker1:FlarMark = new FlarMark("./resources/marker/lado1.pat", markerWH);
+			//var marker1:FlarMark = new FlarMark("./resources/marker/flarlogo.pat", markerWH);
+			marker1.fileId = setSketchFile(marker1.source, URLLoaderDataFormat.TEXT);
+			//marker1.loadModel("./resources/model/earth.3ds");
+			marker1.modelo = modelo;
+			marker1.transform.appendRotation(90, new Vector3D(1, 0, 0));
+			
+			var marker2:FlarMark = new FlarMark("./resources/marker/lado2.pat", markerWH);
 			marker2.fileId = setSketchFile(marker2.source, URLLoaderDataFormat.TEXT);
-			marker2.modelo = modeloLente;
-			marker2.rotateVector = new Vector3D(0, 0, 1);
-			marker2.rotateAngle = 90;
-			marker2.modelo.object.z = 50;
-			//marker2.loadModel("./resources/model/earth.3ds");
-			*/
+			marker2.modelo = modelo;
+			marker2.transform.appendTranslation(0, largura/2, -largura/2);
 			
-			marcas.push(marker);
-			//marcas.push(marker2);
+			var marker3:FlarMark = new FlarMark("./resources/marker/lado3.pat", markerWH);
+			marker3.fileId = setSketchFile(marker3.source, URLLoaderDataFormat.TEXT);
+			marker3.modelo = modelo;
+			marker3.transform.appendRotation(-90, new Vector3D(1, 0, 0));
+			marker3.transform.appendTranslation(0, 0, -largura);
+			
+			var marker4:FlarMark = new FlarMark("./resources/marker/lado4.pat", markerWH);
+			marker4.fileId = setSketchFile(marker4.source, URLLoaderDataFormat.TEXT);
+			marker4.modelo = modelo;
+			marker4.transform.appendRotation(180, new Vector3D(1, 0, 0));
+			marker4.transform.appendTranslation(0, -largura/2, -largura/2);
+			
+			var marker5:FlarMark = new FlarMark("./resources/marker/lado5.pat", markerWH);
+			marker5.fileId = setSketchFile(marker5.source, URLLoaderDataFormat.TEXT);
+			marker5.modelo = modelo;
+			marker5.transform.appendRotation(90, new Vector3D(0, 1, 0));
+			marker5.transform.appendRotation(180, new Vector3D(1, 0, 0));
+			marker5.transform.appendTranslation(0, -largura/2, -largura/2);
+			
+			var marker6:FlarMark = new FlarMark("./resources/marker/lado6.pat", markerWH);
+			marker6.fileId = setSketchFile(marker6.source, URLLoaderDataFormat.TEXT);
+			marker6.modelo = modelo;
+			marker6.transform.appendRotation(-90, new Vector3D(0, 1, 0));
+			marker6.transform.appendRotation(90, new Vector3D(0, 0, 1));
+			marker6.transform.appendTranslation(-largura/2, 0, -largura/2);
+			
+			
+			marcas.push(marker1);
+			marcas.push(marker2);
+			marcas.push(marker3);
+			marcas.push(marker4);
+			marcas.push(marker5);
+			marcas.push(marker6);
 		}
 		
 		override public function main():void 
 		{
 			init();
 		}
+		
+		private var timeControl:Slider = new Slider();
 		
 		private function init(e:Event = null):void 
 		{
@@ -102,6 +132,17 @@ package
 			load3dModels();
 			
 			addEventListener(Event.ENTER_FRAME, onEnterFrame);
+			
+			timeControl.liveDragging = true;
+			timeControl.maximum = 1;
+			timeControl.minimum = 0.05;
+			timeControl.snapInterval = 0.05;
+			timeControl.tickInterval = 0.1;
+			timeControl.value = 1;
+			timeControl.width = 200;
+			timeControl.x = 250;
+			timeControl.y = 475;
+			addChild(timeControl);
 			timeControl.addEventListener(Event.CHANGE, changeTime);
 			
 			setChildIndex(timeControl, numChildren - 1);
@@ -145,7 +186,7 @@ package
 			{
 				marca.markerId = markerSys.addARMarker_2(getSketchFile(marca.fileId), marca.resolution, marca.edgePercentage, marca.size);
 				view3d.scene.addChild(marca.modelo.object);
-				trace(marca.modelo.object);
+				//trace(marca.modelo.object);
 				marca.modelo.object.visible = false;
 			}
 			view3d.scene.addChild(distanceObject);
@@ -169,6 +210,11 @@ package
 						{
 							if (item.modelo == marca.modelo) {
 								temIgual = true;
+								
+								if (markerSys.getConfidence(marca.markerId) > markerSys.getConfidence(item.markerId)) {
+									marcasStage[marcasStage.indexOf(item)] = marca;
+								}
+								
 								break loopIgual;
 							}
 						}
@@ -197,6 +243,8 @@ package
 				var resultMat:Matrix3D = new Matrix3D();
 				markerSys.getAway3dMarkerMatrix(marcaStage.markerId, resultMat);
 				marcaStage.modelo.object.transform = resultMat;
+				//trace(marcaStage.modelo.object.x, marcaStage.modelo.object.y, marcaStage.modelo.object.z);
+				//trace(marcaStage.modelo.object.visible);
 				objectTransform(marcaStage);
 			}
 			camadaEletrons.enterFrame();
@@ -225,10 +273,7 @@ package
 		
 		private function objectTransform(marca:FlarMark):void
 		{
-			var _container:ObjectContainer3D = marca.modelo.object;
-			//_container.rotate(new Vector3D(1, 0, 0), 90);
-			_container.rotate(marca.rotateVector, marca.rotateAngle);
-			//_container.scale(8);
+			marca.modelo.transform = marca.transform;
 		}
 		
 		private function getDistance(x1:Number, y1:Number, z1:Number, x2:Number, y2:Number, z2:Number):Number

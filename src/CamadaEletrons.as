@@ -49,8 +49,9 @@ package
 			cubo.y = larguraAltura;
 			addChild(cubo);
 			
-			var fundo:PlaneGeometry = new PlaneGeometry(2 * comprimento, 8 * larguraAltura);
+			var fundo:PlaneGeometry = new PlaneGeometry(61, 61);
 			var material:ColorMaterial = new ColorMaterial(0xFFFFFF);
+			material.bothSides = true;
 			var mesh:Mesh = new Mesh(fundo, material);
 			//mesh.rotationZ = 90;
 			addChild(mesh);

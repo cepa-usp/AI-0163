@@ -1,5 +1,6 @@
 package  
 {
+	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	/**
 	 * ...
@@ -16,9 +17,7 @@ package
 		private var _edgePercentage:int;
 		private var _size:Number;
 		
-		public var rotateVector:Vector3D = new Vector3D();
-		public var rotateAngle:Number = 0;
-		public var displacement:Vector3D = new Vector3D();
+		private var _transform:Matrix3D = new Matrix3D();
 		
 		public function FlarMark(source:String, size:Number, resolution:int = 16, edgePercentage:int = 25) 
 		{
@@ -51,6 +50,16 @@ package
 		public function get size():Number 
 		{
 			return _size;
+		}
+		
+		public function get transform():Matrix3D 
+		{
+			return _transform;
+		}
+		
+		public function set transform(value:Matrix3D):void 
+		{
+			_transform = value;
 		}
 		
 	}

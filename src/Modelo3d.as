@@ -4,6 +4,7 @@ package
 	import away3d.events.LoaderEvent;
 	import away3d.loaders.Loader3D;
 	import away3d.loaders.parsers.Parsers;
+	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import flash.net.URLRequest;
 	/**
@@ -14,10 +15,12 @@ package
 	{
 		private var loader3d:Loader3D;
 		private var _loadComplete:Boolean = false;
-		public var object3d:ObjectContainer3D;
+		private var _object3d:ObjectContainer3D;
+		public var container:ObjectContainer3D;
 		
 		public function Modelo3d(source:String = "") 
 		{
+			container = new ObjectContainer3D();
 			if(source != ""){
 				Parsers.enableAllBundled();
 				loader3d = new Loader3D();
@@ -31,6 +34,7 @@ package
 		private function onResourceComplete(e:LoaderEvent):void 
 		{
 			_loadComplete = true;
+			object3d = loader3d;
 		}
 		
 		private function onLoadError(e:LoaderEvent):void 
@@ -48,8 +52,24 @@ package
 		
 		public function get object():ObjectContainer3D
 		{
-			if (object3d != null) return object3d;
-			else return loader3d;
+			return container;
+		}
+		
+		//public function get object3d():ObjectContainer3D 
+		//{
+			//return _object3d;
+		//}
+		
+		public function set object3d(value:ObjectContainer3D):void 
+		{
+			if (_object3d != null) container.removeChild(_object3d);
+			_object3d = value;
+			container.addChild(_object3d);
+		}
+		
+		public function set transform(transMat:Matrix3D):void
+		{
+			_object3d.transform = transMat;
 		}
 	}
 

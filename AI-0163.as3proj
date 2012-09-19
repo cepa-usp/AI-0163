@@ -4,14 +4,15 @@
   <output>
     <movie outputType="Application" />
     <movie input="" />
-    <movie path="bin\TesteFlarAway.swf" />
+    <movie path="bin\AI-0163.swf" />
     <movie fps="30" />
     <movie width="700" />
     <movie height="500" />
-    <movie version="11" />
-    <movie minorVersion="1" />
-    <movie platform="Flash Player" />
+    <movie version="3" />
+    <movie minorVersion="2" />
+    <movie platform="AIR" />
     <movie background="#FFFFFF" />
+    <movie preferredSDK="D:\Projetos\05 - GitHub\AI-0163\flex_sdk_4.6.0.23201\4.6.0" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
@@ -52,6 +53,7 @@
   <!-- SWC Libraries -->
   <libraryPaths>
     <element path="lib\away3d-core-fp11_4_0_7_gold.swc" />
+    <element path="lib\slider.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>
@@ -84,8 +86,10 @@
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
-    <option testMovie="Default" />
+    <option testMovie="Unknown" />
   </options>
   <!-- Plugin storage -->
-  <storage />
+  <storage>
+    <entry key="air-descriptor"><![CDATA[bin\AI-0163-app.xml]]></entry>
+  </storage>
 </project>
