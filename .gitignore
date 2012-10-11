@@ -1,4 +1,4 @@
-# Ignora os arquivos gerados pelo FlashDevelop
+﻿# Ignora os arquivos gerados pelo FlashDevelop
 /bin
 
 # Ignora a versão anterior da configuração do projeto FlashDevelop
@@ -6,3 +6,7 @@
 
 # Ignora o arquivo de log do publish.sh
 /publish.log
+
+/flex_sdk_4.6.0.23201
+
+/AIR

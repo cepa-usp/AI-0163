@@ -4,13 +4,17 @@ package
 	import away3d.containers.Scene3D;
 	import away3d.containers.View3D;
 	import away3d.loaders.Loader3D;
+	import cepa.utils.Cronometer;
 	import fl.controls.Slider;
 	import flash.events.Event;
+	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
 	import flash.geom.Matrix;
 	import flash.geom.Matrix3D;
 	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
 	import flash.net.URLLoaderDataFormat;
+	import flash.ui.Keyboard;
 	import jp.nyatla.as3utils.sketch.FLSketch;
 	import org.libspark.flartoolkit.core.types.FLARIntSize;
 	import org.libspark.flartoolkit.markersystem.FLARMarkerSystemConfig;
@@ -59,51 +63,52 @@ package
 			
 			//var modelo:Modelo3d = new Modelo3d("./resources/model/earth.3ds");
 			var modelo:Modelo3d = new Modelo3d();
-			camadaEletrons = new CamadaEletrons(15, 150, 10, 20, 500, 10);
+			camadaEletrons = new CamadaEletrons(15, 150, 10, 20, 90, 10);
 			modelo.object3d = camadaEletrons;
 			//CamadaEletrons(modelo.object3d).startAnimation();
 			
 			//TO DO: ler todos os markers aqui
 			var largura:Number = 70;
 			var markerWH:Number = 60;
+			var larguraAlturaModelo:Number = 30;
 			
 			var marker1:FlarMark = new FlarMark("./resources/marker/lado1.pat", markerWH);
 			//var marker1:FlarMark = new FlarMark("./resources/marker/flarlogo.pat", markerWH);
 			marker1.fileId = setSketchFile(marker1.source, URLLoaderDataFormat.TEXT);
 			//marker1.loadModel("./resources/model/earth.3ds");
 			marker1.modelo = modelo;
-			marker1.transform.appendRotation(90, new Vector3D(1, 0, 0));
+			marker1.transform.appendRotation(-90, new Vector3D(1, 0, 0));
+			marker1.transform.appendTranslation(0, 0, -largura/2 + larguraAlturaModelo/2);
 			
 			var marker2:FlarMark = new FlarMark("./resources/marker/lado2.pat", markerWH);
 			marker2.fileId = setSketchFile(marker2.source, URLLoaderDataFormat.TEXT);
 			marker2.modelo = modelo;
-			marker2.transform.appendTranslation(0, largura/2, -largura/2);
+			marker2.transform.appendRotation(-180, new Vector3D(1, 0, 0));
+			marker2.transform.appendTranslation(0, larguraAlturaModelo/2, -largura/2);
 			
 			var marker3:FlarMark = new FlarMark("./resources/marker/lado3.pat", markerWH);
 			marker3.fileId = setSketchFile(marker3.source, URLLoaderDataFormat.TEXT);
 			marker3.modelo = modelo;
-			marker3.transform.appendRotation(-90, new Vector3D(1, 0, 0));
-			marker3.transform.appendTranslation(0, 0, -largura);
+			marker3.transform.appendRotation(90, new Vector3D(1, 0, 0));
+			marker3.transform.appendTranslation(0, 0, -largura / 2 - larguraAlturaModelo / 2);
 			
 			var marker4:FlarMark = new FlarMark("./resources/marker/lado4.pat", markerWH);
 			marker4.fileId = setSketchFile(marker4.source, URLLoaderDataFormat.TEXT);
 			marker4.modelo = modelo;
-			marker4.transform.appendRotation(180, new Vector3D(1, 0, 0));
-			marker4.transform.appendTranslation(0, -largura/2, -largura/2);
+			marker4.transform.appendTranslation(0, -larguraAlturaModelo/2, -largura/2);
 			
 			var marker5:FlarMark = new FlarMark("./resources/marker/lado5.pat", markerWH);
 			marker5.fileId = setSketchFile(marker5.source, URLLoaderDataFormat.TEXT);
 			marker5.modelo = modelo;
-			marker5.transform.appendRotation(90, new Vector3D(0, 1, 0));
-			marker5.transform.appendRotation(180, new Vector3D(1, 0, 0));
-			marker5.transform.appendTranslation(0, -largura/2, -largura/2);
+			marker5.transform.appendRotation(-90, new Vector3D(0, 1, 0));
+			marker5.transform.appendTranslation(0, -larguraAlturaModelo/2, -largura/2);
 			
 			var marker6:FlarMark = new FlarMark("./resources/marker/lado6.pat", markerWH);
 			marker6.fileId = setSketchFile(marker6.source, URLLoaderDataFormat.TEXT);
 			marker6.modelo = modelo;
 			marker6.transform.appendRotation(-90, new Vector3D(0, 1, 0));
-			marker6.transform.appendRotation(90, new Vector3D(0, 0, 1));
-			marker6.transform.appendTranslation(-largura/2, 0, -largura/2);
+			marker6.transform.appendRotation(-90, new Vector3D(0, 0, 1));
+			marker6.transform.appendTranslation(-larguraAlturaModelo/2, 0, -largura/2);
 			
 			
 			marcas.push(marker1);
@@ -116,12 +121,15 @@ package
 		
 		override public function main():void 
 		{
-			init();
+			init2();
 		}
 		
 		private var timeControl:Slider = new Slider();
+		private var cronometro:Cronometro;
+		private var cron:Cronometer;
+		private var wireOnOff:WireButton;
 		
-		private function init(e:Event = null):void 
+		private function init2(e:Event = null):void 
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			// entry point
@@ -131,7 +139,15 @@ package
 			setup3d();
 			load3dModels();
 			
-			addEventListener(Event.ENTER_FRAME, onEnterFrame);
+			cron = new Cronometer();
+			
+			cronometro = new Cronometro();
+			cronometro.x = 5;
+			cronometro.y = 500 - cronometro.height - 5;
+			cronometro.btn_play.addEventListener(MouseEvent.CLICK, startCronometro);
+			cronometro.btn_pause.addEventListener(MouseEvent.CLICK, pauseCronometro);
+			cronometro.btn_reset.addEventListener(MouseEvent.CLICK, resetCronometro);
+			layerAtividade.addChild(cronometro);
 			
 			timeControl.liveDragging = true;
 			timeControl.maximum = 1;
@@ -142,10 +158,68 @@ package
 			timeControl.width = 200;
 			timeControl.x = 250;
 			timeControl.y = 475;
-			addChild(timeControl);
+			layerAtividade.addChild(timeControl);
 			timeControl.addEventListener(Event.CHANGE, changeTime);
 			
-			setChildIndex(timeControl, numChildren - 1);
+			wireOnOff = new WireButton();
+			wireOnOff.x = 500;
+			wireOnOff.y = 470;
+			layerAtividade.addChild(wireOnOff);
+			wireOnOff.addEventListener(MouseEvent.CLICK, cubeOnOff);
+			
+			layerAtividade.setChildIndex(cronometro, layerAtividade.numChildren - 1);
+			layerAtividade.setChildIndex(timeControl, layerAtividade.numChildren - 1);
+			layerAtividade.setChildIndex(wireOnOff, layerAtividade.numChildren - 1);
+			addEventListener(Event.ENTER_FRAME, onEnterFrame);
+			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDownHandler);
+			
+		}
+		
+		private function cubeOnOff(e:MouseEvent):void 
+		{
+			if (wireOnOff.currentFrame == 1) {
+				wireOnOff.gotoAndStop(2);
+				camadaEletrons.cubo.visible = false;
+			}else {
+				wireOnOff.gotoAndStop(1);
+				camadaEletrons.cubo.visible = true;
+			}
+		}
+		
+		private function keyDownHandler(e:KeyboardEvent):void 
+		{
+			if (e.keyCode == Keyboard.SPACE) {
+				if (cron.isRunning()) {
+					pauseCronometro(null);
+				}else {
+					startCronometro(null);
+				}
+			}
+		}
+		
+		private function startCronometro(e:MouseEvent):void 
+		{
+			cron.start();
+			camadaEletrons.counting = true;
+			cronometro.btn_play.visible = false;
+		}
+		
+		private function pauseCronometro(e:MouseEvent):void 
+		{
+			cron.pause();
+			camadaEletrons.counting = false;
+			cronometro.btn_play.visible = true;
+		}
+		
+		private function resetCronometro(e:MouseEvent):void 
+		{
+			cron.stop();
+			cron.reset();
+			camadaEletrons.counting = false;
+			camadaEletrons.count = 0;
+			cronometro.btn_play.visible = true;
+			cronometro.display.text = "0,0";
+			cronometro.counter.text = "0";
 		}
 		
 		private function changeTime(e:Event):void 
@@ -177,7 +251,7 @@ package
 			
 			view3d.background = new FLARWebCamTexture(cameraWidth, cameraHeight);
 			
-			addChild(view3d);
+			layerAtividade.addChild(view3d);
 		}
 		
 		private function load3dModels():void 
@@ -194,6 +268,11 @@ package
 		
 		private function onEnterFrame(e:Event):void 
 		{
+			if(camadaEletrons.counting){
+				cronometro.display.text = Number(cron.read() / 1000).toFixed(1);
+				cronometro.counter.text = String(camadaEletrons.count);
+			}
+			
 			arSensor.update_3(camera.video, scaleRatio);
 			markerSys.update(arSensor);
 			FLARWebCamTexture(view3d.background).update(camera.video);

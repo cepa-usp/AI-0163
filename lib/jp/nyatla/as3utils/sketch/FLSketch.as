@@ -1,5 +1,6 @@
 package jp.nyatla.as3utils.sketch
 {
+	import BaseAssets.BaseMain;
 	import flash.net.*;
 	import flash.text.*;
     import flash.display.*; 
@@ -12,7 +13,7 @@ package jp.nyatla.as3utils.sketch
 	 * ...
 	 * @author nyatla
 	 */
-	public class FLSketch extends Sprite
+	public class FLSketch extends BaseMain
 	{
 		private var _loader:FilesLoader = new FilesLoader();
 		public static const DATAFORMAT_AS_OBJECT:String = "AS_OBJECT";

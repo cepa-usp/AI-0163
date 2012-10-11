@@ -28,9 +28,13 @@ package
 		private var nParticulasFrame:Number = 10;
 		private var vetorDeslocamento:Vector3D;
 		public var velMult:Number = 1;
+		public var cubo:WireframeCube;
 		
 		public var particulas:Vector.<Particula> = new Vector.<Particula>();
 		private var timer:Timer;
+		
+		public var counting:Boolean = false;
+		public var count:int = 0;
 		
 		public function CamadaEletrons(larguraAltura:Number, comprimento:Number, velMin:Number, velMax:Number, particulasSegundo:int, deslocamentoX:Number) 
 		{
@@ -45,16 +49,16 @@ package
 			vetorDeslocamento.y = larguraAltura;
 			vetorDeslocamento.z = larguraAltura;
 			
-			var cubo:WireframeCube = new WireframeCube(2 * comprimento, 2 * larguraAltura, 2 * larguraAltura, 0x000000);
+			cubo = new WireframeCube(2 * comprimento, 2 * larguraAltura, 2 * larguraAltura, 0x000000);
 			cubo.y = larguraAltura;
 			addChild(cubo);
 			
-			var fundo:PlaneGeometry = new PlaneGeometry(61, 61);
-			var material:ColorMaterial = new ColorMaterial(0xFFFFFF);
-			material.bothSides = true;
-			var mesh:Mesh = new Mesh(fundo, material);
+			//var fundo:PlaneGeometry = new PlaneGeometry(61, 61);
+			//var material:ColorMaterial = new ColorMaterial(0xFFFFFF);
+			//material.bothSides = true;
+			//var mesh:Mesh = new Mesh(fundo, material);
 			//mesh.rotationZ = 90;
-			addChild(mesh);
+			//addChild(mesh);
 			
 			//var cubo:CylinderGeometry = new CylinderGeometry(raio, raio, 2 * comprimento, 20, 1, false, false);
 			//var material:ColorMaterial = new ColorMaterial(0x0000FF, 0.1);
@@ -156,7 +160,8 @@ package
 			var displacement:Number = (2 * comprimento / nParticulas);
 			for (var i:int = 0; i < nParticulas; i++) 
 			{
-				var cor:uint = getColor(displacement * i);
+				//var cor:uint = getColor(displacement * i);
+				var cor:uint = 0x800000;
 				var part:Particula = new Particula(cor);
 				reposicionaParticula(part, (displacement * i) - comprimento);
 				//if (i <= 166) reposicionaParticula(part, 50 - comprimento);
@@ -267,6 +272,7 @@ package
 				if (newX > comprimento) {
 					//Se a posição x for maior que o comprimento o elétron é recolocado no inicio do tubo
 					reposicionaParticula(item, -comprimento);
+					if (counting) count++;
 				}else {
 					//Senão verificamos por colisões:
 					var indexAtual:int = getNextVectorPos(item.x);

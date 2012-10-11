@@ -19,7 +19,8 @@ package
 		
 		public function Particula(cor:uint = 0x800000) 
 		{
-			var sphere:CubeGeometry = new CubeGeometry(1, 1, 1);
+			//var sphere:CubeGeometry = new CubeGeometry(1, 1, 1);
+			var sphere:SphereGeometry = new SphereGeometry(1.5, 8, 6);
 			var mesh:Mesh = new Mesh(sphere);
 			mesh.material = new ColorMaterial(cor);
 			
