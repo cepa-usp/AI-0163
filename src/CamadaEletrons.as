@@ -30,6 +30,10 @@ package
 		public var velMult:Number = 1;
 		public var cubo:WireframeCube;
 		
+		private var cores:Array = [0x000040, 0x0080FF, 0x0000FF, 0x0080C0];
+		private var corAtual:int = 0;
+		private var timerToChangeColor:Timer = new Timer(20 * 1000);
+		
 		public var particulas:Vector.<Particula> = new Vector.<Particula>();
 		private var timer:Timer;
 		
@@ -53,6 +57,9 @@ package
 			cubo.y = larguraAltura;
 			addChild(cubo);
 			
+			timerToChangeColor.addEventListener(TimerEvent.TIMER, changeColor);
+			timerToChangeColor.start();
+			
 			//var fundo:PlaneGeometry = new PlaneGeometry(61, 61);
 			//var material:ColorMaterial = new ColorMaterial(0xFFFFFF);
 			//material.bothSides = true;
@@ -74,6 +81,12 @@ package
 			cron.start();
 			//startAnimation();
 			//enterFrame(null);
+		}
+		
+		private function changeColor(e:TimerEvent):void 
+		{
+			corAtual++;
+			if (corAtual == cores.length) corAtual = 0;
 		}
 		
 		private var eletrons:Vector.<Vector.<Eletron>> = new Vector.<Vector.<Eletron>>();
@@ -199,10 +212,15 @@ package
 			particulas.push(part);
 		}
 		
+		private function getInicialXvel():Number
+		{
+			return -0.3 + 0.6 * Math.random();
+		}
+		
 		private function reposicionaParticula(part:Particula, positionX:Number):void
 		{
 			//var direcao:Vector3D = new Vector3D((Math.random() + 0.4) * (Math.random() > 0.5 ? 1 : -1), (Math.random() + 0.4) * (Math.random() > 0.5 ? 1 : -1), (Math.random() + 0.4) * (Math.random() > 0.5 ? 1 : -1));
-			var direcao:Vector3D = new Vector3D(0, -1 + 2 * Math.random(), -1 + 2 * Math.random());
+			var direcao:Vector3D = new Vector3D(getInicialXvel(), -1 + 2 * Math.random(), -1 + 2 * Math.random());
 			//var direcao:Vector3D = new Vector3D(0, (Math.random() + 0.4) * (Math.random() > 0.5 ? 1 : -1), (Math.random() + 0.4) * (Math.random() > 0.5 ? 1 : -1));
 			direcao.normalize();
 			var vel:Number = Math.random() * (velMax - velMin) + velMin;
@@ -211,14 +229,23 @@ package
 			//trace(direcao.toString());
 			
 			part.x = positionX;
-			part.y = larguraAltura// + (Math.random() * (larguraAltura) * (Math.random() < 0.5 ? 1 : -1));
-			part.z = 0//Math.random() * (larguraAltura) * (Math.random() < 0.5 ? 1 : -1);
+			part.y = larguraAltura + (Math.random() * (larguraAltura) * (Math.random() < 0.5 ? 1 : -1));
+			part.z = Math.random() * (larguraAltura) * (Math.random() < 0.5 ? 1 : -1);
+			
+			part.color = cores[corAtual];
 			
 			part.posAnt.x = part.x;
 			part.posAnt.y = part.y;
 			part.posAnt.z = part.z;
 			
 			part.cron = 0;
+			
+			if(positionX == -comprimento){
+				//part.blink();
+				var evt:Evt = new Evt("playSound");
+				evt.particula = part;
+				dispatchEvent(evt);
+			}
 		}
 		
 		private var colisionDist:Number = 5;
@@ -241,6 +268,13 @@ package
 				}
 			}
 			return false;
+		}
+		
+		public function setAceleracao(ax:Number, ay:Number, az:Number):void
+		{
+			aceleracao.x = ax;
+			aceleracao.y = ay;
+			aceleracao.z = az;
 		}
 		
 		private var aceleracao:Vector3D = new Vector3D(15, 0, 0);
@@ -284,11 +318,11 @@ package
 						if (verificaColisaoEixoX(indexAtual, indexProx, new Vector3D(item.x, item.y, item.z), new Vector3D(newX, newY, newZ))) {
 							//Colisão com uma particula no eixo y:
 							//direcao_atualizada.x = -2 + 3 * Math.random();
-							direcao_atualizada.x = 0;
+							direcao_atualizada.x = getInicialXvel();
 							novaIntensidade = Math.random() * (velMax - velMin) + velMin;
 							colisionX = true;
 						}
-						direcao_atualizada.x = 0;
+						direcao_atualizada.x = getInicialXvel();
 						direcao_atualizada.y *= -1 * (0.8 + Math.random() * 0.4);
 						colision = true;
 					}
@@ -301,14 +335,14 @@ package
 								novaIntensidade = Math.random() * (velMax - velMin) + velMin;
 							}
 						}
-						direcao_atualizada.x = 0;
+						direcao_atualizada.x = getInicialXvel();
 						direcao_atualizada.z *= -1 * (0.8 + Math.random() * 0.4);
 						colision = true;
 					}
 					if(!colision){
 						if (verificaColisaoEixoX(indexAtual, indexProx, new Vector3D(item.x, item.y, item.z), new Vector3D(newX, newY, newZ))) {
 							//direcao_atualizada.x = -2 + 3 * Math.random();
-							direcao_atualizada.x = 0;
+							direcao_atualizada.x = getInicialXvel();
 							direcao_atualizada.y *= -1 * (0.8 + Math.random() * 0.4);
 							direcao_atualizada.z *= -1 * (0.8 + Math.random() * 0.4);
 							//direcao_atualizada.y = -1 + 2 * Math.random();
@@ -336,6 +370,11 @@ package
 					item.x = newX;
 					item.y = newY;
 					item.z = newZ;
+					
+					//if (item.x > -0.2 && item.x < 0.2) {
+						//item.blink();
+						//dispatchEvent(new Event("playSound"));
+					//}
 					
 					if (item.y > 2 * larguraAltura) item.y = 2 * larguraAltura - 2;
 					else if (item.y < 0) item.y = 2;

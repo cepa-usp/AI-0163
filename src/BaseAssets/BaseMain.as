@@ -145,7 +145,7 @@ package BaseAssets
 			feedbackScreen = new FeedBackScreen(glassPane);
 			layerDialogo.addChild(feedbackScreen);
 			
-			botoes = new MenuBar(false);
+			botoes = new MenuBar();
 			//botoes.x = rect.width - botoes.BTN_WIDTH - 12;
 			botoes.y = rect.height - 12;
 			layerMenu.addChild(botoes);

@@ -71,6 +71,16 @@ package
 		{
 			_object3d.transform = transMat;
 		}
+		
+		public function set setScale(value:Number):void
+		{
+			container.scaleX = container.scaleY = container.scaleZ = value;
+		}
+		
+		public function get setScale():Number
+		{
+			return container.scaleX;
+		}
 	}
 
 }

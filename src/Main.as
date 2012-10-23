@@ -3,7 +3,10 @@ package
 	import away3d.containers.ObjectContainer3D;
 	import away3d.containers.Scene3D;
 	import away3d.containers.View3D;
+	import away3d.entities.Mesh;
 	import away3d.loaders.Loader3D;
+	import away3d.materials.ColorMaterial;
+	import away3d.primitives.PlaneGeometry;
 	import cepa.utils.Cronometer;
 	import fl.controls.Slider;
 	import flash.events.Event;
@@ -46,8 +49,10 @@ package
 		private var cameraURL:String = "./resources/camera_param/camera_para.dat";
 		
 		private var marcas:Vector.<FlarMark> = new Vector.<FlarMark>();
+		private var markerBase:FlarMark;
 		private var camadaEletrons:CamadaEletrons;
 		private var modeloLente:Modelo3d;
+		private var baseModeloLamina:Mesh;
 		
 		private var distanceObject:DistanceObject = new DistanceObject();
 		
@@ -66,6 +71,7 @@ package
 			camadaEletrons = new CamadaEletrons(15, 150, 10, 20, 90, 10);
 			modelo.object3d = camadaEletrons;
 			//CamadaEletrons(modelo.object3d).startAnimation();
+			camadaEletrons.addEventListener("playSound", playSound);
 			
 			//TO DO: ler todos os markers aqui
 			var largura:Number = 70;
@@ -100,7 +106,7 @@ package
 			var marker5:FlarMark = new FlarMark("./resources/marker/lado5.pat", markerWH);
 			marker5.fileId = setSketchFile(marker5.source, URLLoaderDataFormat.TEXT);
 			marker5.modelo = modelo;
-			marker5.transform.appendRotation(-90, new Vector3D(0, 1, 0));
+			marker5.transform.appendRotation(90, new Vector3D(0, 1, 0));
 			marker5.transform.appendTranslation(0, -larguraAlturaModelo/2, -largura/2);
 			
 			var marker6:FlarMark = new FlarMark("./resources/marker/lado6.pat", markerWH);
@@ -108,7 +114,25 @@ package
 			marker6.modelo = modelo;
 			marker6.transform.appendRotation(-90, new Vector3D(0, 1, 0));
 			marker6.transform.appendRotation(-90, new Vector3D(0, 0, 1));
-			marker6.transform.appendTranslation(-larguraAlturaModelo/2, 0, -largura/2);
+			marker6.transform.appendTranslation( -larguraAlturaModelo / 2, 0, -largura / 2);
+			
+			var geom:PlaneGeometry = new PlaneGeometry(60, 300 * 0.8);
+			var mat:ColorMaterial = new ColorMaterial(0xFFFFFF);
+			baseModeloLamina = new Mesh(geom, mat);
+			baseModeloLamina.rotate(new Vector3D(1, 0, 0), 90);
+			baseModeloLamina.rotate(new Vector3D(0, 1, 0), 90);
+			baseModeloLamina.translate(new Vector3D(0, 1, 0), -20);
+			baseModeloLamina.translate(new Vector3D(0, 0, 1), -larguraAlturaModelo/2);
+			
+			markerBase = new FlarMark("./resources/marker/base.pat", markerWH);
+			markerBase.fileId = setSketchFile(markerBase.source, URLLoaderDataFormat.TEXT);
+			markerBase.modelo = modelo;
+			markerBase.modelo.object.addChild(baseModeloLamina);
+			baseModeloLamina.visible = false;
+			//markerBase.transform.appendRotation(-90, new Vector3D(0, 1, 0));
+			//markerBase.transform.appendRotation(-90, new Vector3D(0, 0, 1));
+			markerBase.transform.appendTranslation(0, -40, 0);
+			markerBase.transform.appendScale(0.8, 0.8, 0.8);
 			
 			
 			marcas.push(marker1);
@@ -117,6 +141,16 @@ package
 			marcas.push(marker4);
 			marcas.push(marker5);
 			marcas.push(marker6);
+			marcas.push(markerBase);
+		}
+		
+		private function playSound(e:Evt):void 
+		{
+			if (cron.isRunning()) {
+				e.particula.blink();
+				var pop:Pop = new Pop();
+				pop.play();
+			}
 		}
 		
 		override public function main():void 
@@ -124,10 +158,10 @@ package
 			init2();
 		}
 		
-		private var timeControl:Slider = new Slider();
 		private var cronometro:Cronometro;
 		private var cron:Cronometer;
-		private var wireOnOff:WireButton;
+		
+		private var animationMenu:AnimationMenu;
 		
 		private function init2(e:Event = null):void 
 		{
@@ -143,45 +177,41 @@ package
 			
 			cronometro = new Cronometro();
 			cronometro.x = 5;
-			cronometro.y = 500 - cronometro.height - 5;
+			cronometro.y = 495;
 			cronometro.btn_play.addEventListener(MouseEvent.CLICK, startCronometro);
 			cronometro.btn_pause.addEventListener(MouseEvent.CLICK, pauseCronometro);
 			cronometro.btn_reset.addEventListener(MouseEvent.CLICK, resetCronometro);
 			layerAtividade.addChild(cronometro);
 			
-			timeControl.liveDragging = true;
-			timeControl.maximum = 1;
-			timeControl.minimum = 0.05;
-			timeControl.snapInterval = 0.05;
-			timeControl.tickInterval = 0.1;
-			timeControl.value = 1;
-			timeControl.width = 200;
-			timeControl.x = 250;
-			timeControl.y = 475;
-			layerAtividade.addChild(timeControl);
-			timeControl.addEventListener(Event.CHANGE, changeTime);
+			animationMenu = new AnimationMenu();
+			animationMenu.x = 370;
+			animationMenu.y = 445;
+			layerAtividade.addChild(animationMenu);
 			
-			wireOnOff = new WireButton();
-			wireOnOff.x = 500;
-			wireOnOff.y = 470;
-			layerAtividade.addChild(wireOnOff);
-			wireOnOff.addEventListener(MouseEvent.CLICK, cubeOnOff);
+			animationMenu.timeControl.addEventListener(Event.CHANGE, changeTime);
+			animationMenu.acelControl.addEventListener(Event.CHANGE, changeAcel);
+			animationMenu.wireOnOff.addEventListener(MouseEvent.CLICK, cubeOnOff);
 			
 			layerAtividade.setChildIndex(cronometro, layerAtividade.numChildren - 1);
-			layerAtividade.setChildIndex(timeControl, layerAtividade.numChildren - 1);
-			layerAtividade.setChildIndex(wireOnOff, layerAtividade.numChildren - 1);
+			//layerAtividade.setChildIndex(timeControl, layerAtividade.numChildren - 1);
+			//layerAtividade.setChildIndex(wireOnOff, layerAtividade.numChildren - 1);
 			addEventListener(Event.ENTER_FRAME, onEnterFrame);
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDownHandler);
 			
 		}
 		
+		private function changeAcel(e:Event):void 
+		{
+			camadaEletrons.setAceleracao(animationMenu.acelControl.value, 0, 0);
+		}
+		
 		private function cubeOnOff(e:MouseEvent):void 
 		{
-			if (wireOnOff.currentFrame == 1) {
-				wireOnOff.gotoAndStop(2);
+			if (animationMenu.wireOnOff.currentFrame == 1) {
+				animationMenu.wireOnOff.gotoAndStop(2);
 				camadaEletrons.cubo.visible = false;
 			}else {
-				wireOnOff.gotoAndStop(1);
+				animationMenu.wireOnOff.gotoAndStop(1);
 				camadaEletrons.cubo.visible = true;
 			}
 		}
@@ -197,8 +227,10 @@ package
 			}
 		}
 		
+		private var maxCron:Number = 999;
 		private function startCronometro(e:MouseEvent):void 
 		{
+			if (cron.read() / 1000 >= maxCron) return;
 			cron.start();
 			camadaEletrons.counting = true;
 			cronometro.btn_play.visible = false;
@@ -224,7 +256,7 @@ package
 		
 		private function changeTime(e:Event):void 
 		{
-			camadaEletrons.velMult = timeControl.value;
+			camadaEletrons.velMult = animationMenu.timeControl.value;
 		}
 		
 		private function setupCamera():void 
@@ -268,9 +300,10 @@ package
 		
 		private function onEnterFrame(e:Event):void 
 		{
-			if(camadaEletrons.counting){
-				cronometro.display.text = Number(cron.read() / 1000).toFixed(1);
+			if (camadaEletrons.counting) {
+				cronometro.display.text = Number(cron.read() / 1000).toFixed(1).replace(".", ",");
 				cronometro.counter.text = String(camadaEletrons.count);
+				if (cron.read() / 1000 >= maxCron) pauseCronometro(null);
 			}
 			
 			arSensor.update_3(camera.video, scaleRatio);
@@ -278,9 +311,16 @@ package
 			FLARWebCamTexture(view3d.background).update(camera.video);
 			var marcasStage:Vector.<FlarMark> = new Vector.<FlarMark>();
 			
-			for each (var marca:FlarMark in marcas) 
+			search: for each (var marca:FlarMark in marcas) 
 			{
 				if (markerSys.isExistMarker(marca.markerId)) {
+					if (marca == markerBase) {
+						if (marcasStage.length > 0) {
+							marca.modelo.object.visible = false;
+							break search;
+						}
+					}
+					
 					if (marcasStage.length == 0) {
 						marcasStage.push(marca);
 					}else {
@@ -318,6 +358,9 @@ package
 			
 			for each (var marcaStage:FlarMark in marcasStage) 
 			{
+				if (marcaStage == markerBase) baseModeloLamina.visible = true;
+				else baseModeloLamina.visible = false;
+				
 				marcaStage.modelo.object.visible = true;
 				var resultMat:Matrix3D = new Matrix3D();
 				markerSys.getAway3dMarkerMatrix(marcaStage.markerId, resultMat);
