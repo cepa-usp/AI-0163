@@ -29,22 +29,39 @@ package
 			
 			
 			//var sphere1:CubeGeometry = new CubeGeometry(2, 2, 2);
-			var sphere1:SphereGeometry = new SphereGeometry(1, 8, 6);
-			var mesh1:Mesh = new Mesh(sphere1);
-			mesh1.material = new ColorMaterial(0x000080);
-			
-			var sphere:SphereGeometry = new SphereGeometry(5, 16, 12);
+			var sphere:SphereGeometry = new SphereGeometry(1, 4, 4);
 			var mesh:Mesh = new Mesh(sphere);
-			mesh.material = new ColorMaterial(0x00FF00, 0.2);
+			mesh.material = new ColorMaterial(0x800000);
+			
+			//var sphere1:SphereGeometry = new SphereGeometry(2, 6, 4);
+			//var mesh1:Mesh = new Mesh(sphere1);
+			//mesh1.material = new ColorMaterial(0x00FF00, 0.2);
+			//mesh1.material.alphaPremultiplied = true;
+			
+			var sphere2:SphereGeometry = new SphereGeometry(2.5, 8, 6);
+			var mesh2:Mesh = new Mesh(sphere2);
+			mesh2.material = new ColorMaterial(0x00FF00, 0.2);
+			//mesh2.material.alphaPremultiplied = true;
+			
+			//var sphere3:SphereGeometry = new SphereGeometry(4, 12, 8);
+			//var mesh3:Mesh = new Mesh(sphere3);
+			//mesh3.material = new ColorMaterial(0x00FF00, 0.15);
+			//mesh3.material.alphaPremultiplied = true;
+			
+			var sphere4:SphereGeometry = new SphereGeometry(5, 10, 10);
+			var mesh4:Mesh = new Mesh(sphere4);
+			mesh4.material = new ColorMaterial(0x00FF00, 0.15);
+			//mesh4.material.alphaPremultiplied = true;
 			
 			//var sphere2:SphereGeometry = new SphereGeometry(5);
 			//var mesh2:Mesh = new Mesh(sphere2);
 			//mesh2.material = new ColorMaterial(0x000000, 0.2);
 			
-			addChild(mesh1);
+			addChild(mesh4);
+			//addChild(mesh3);
+			addChild(mesh2);
+			//addChild(mesh1);
 			addChild(mesh);
-			//addChild(mesh2);
-			
 		}
 		
 		private function onResourceComplete(e:LoaderEvent):void 

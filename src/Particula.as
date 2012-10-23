@@ -111,7 +111,7 @@ package
 			glow.object.visible = true;
 			mesh.visible = false;
 			//lines.visible = true;
-			Actuate.tween(glow, 0.15, {setScale:0.1}).ease(Linear.easeNone).onComplete(fadeOut);
+			Actuate.tween(glow, 0.15, {setScale:0.12}).ease(Linear.easeNone).onComplete(fadeOut);
 			//Actuate.tween(ColorMaterial(glowMesh.material), 0.15, {alpha:0.8}).ease(Linear.easeNone).onComplete(fadeOut);
 			//Actuate.tween(glowMesh, 0.3, { rotationX:720, rotationY:720, rotationZ:720 } ).ease(Linear.easeNone).onComplete(rsetRotation);
 		}
