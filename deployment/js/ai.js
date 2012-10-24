@@ -24,6 +24,7 @@ function init () {
 	var params = {};
 	params.menu = "false";
 	params.scale = "showall";
+	params.wmode = "gpu";
 
 	var attributes = {};
 	attributes.id = "ai";
