@@ -51,6 +51,7 @@ package
 			addChild(_timeControl);
 			
 			var timeText:TextField = new TextField();
+			timeText.selectable = false;
 			timeText.autoSize = TextFieldAutoSize.LEFT;
 			timeText.text = "Velocidade da animação";
 			timeText.x = 125 - timeText.textWidth / 2 + 20;
@@ -70,6 +71,7 @@ package
 			addChild(_acelControl);
 			
 			var acelText:TextField = new TextField();
+			acelText.selectable = false;
 			acelText.autoSize = TextFieldAutoSize.LEFT;
 			acelText.text = "Aceleração dos elétrons";
 			acelText.x = -125 - acelText.textWidth / 2 - 20;
@@ -77,9 +79,17 @@ package
 			
 			//Botão do wireframe
 			_wireOnOff = new WireButton();
+			_wireOnOff.scaleY = 0.8;
 			_wireOnOff.x = 0;
-			_wireOnOff.y = 25;
+			_wireOnOff.y = 35;
 			addChild(_wireOnOff);
+			
+			var wireText:TextField = new TextField();
+			wireText.selectable = false;
+			wireText.autoSize = TextFieldAutoSize.LEFT;
+			wireText.text = "Bordas";
+			wireText.x = - wireText.textWidth / 2;
+			addChild(wireText);
 			
 			//Botão de abrir e fechar
 			openClose = new OpenClose();

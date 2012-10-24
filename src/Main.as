@@ -116,7 +116,7 @@ package
 			marker6.transform.appendRotation(-90, new Vector3D(0, 0, 1));
 			marker6.transform.appendTranslation( -larguraAlturaModelo / 2, 0, -largura / 2);
 			
-			var geom:PlaneGeometry = new PlaneGeometry(60, 300 * 0.8);
+			var geom:PlaneGeometry = new PlaneGeometry(30 * 0.8, 300 * 0.8);
 			var mat:ColorMaterial = new ColorMaterial(0xFFFFFF);
 			baseModeloLamina = new Mesh(geom, mat);
 			baseModeloLamina.rotate(new Vector3D(1, 0, 0), 90);
@@ -176,15 +176,15 @@ package
 			cron = new Cronometer();
 			
 			cronometro = new Cronometro();
-			cronometro.x = 5;
-			cronometro.y = 495;
+			cronometro.x = 15;
+			cronometro.y = 485;
 			cronometro.btn_play.addEventListener(MouseEvent.CLICK, startCronometro);
 			cronometro.btn_pause.addEventListener(MouseEvent.CLICK, pauseCronometro);
 			cronometro.btn_reset.addEventListener(MouseEvent.CLICK, resetCronometro);
 			layerAtividade.addChild(cronometro);
 			
 			animationMenu = new AnimationMenu();
-			animationMenu.x = 370;
+			animationMenu.x = 375;
 			animationMenu.y = 445;
 			layerAtividade.addChild(animationMenu);
 			
