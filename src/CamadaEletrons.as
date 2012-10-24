@@ -381,6 +381,9 @@ package
 					
 					if (item.z > larguraAltura) item.z = larguraAltura - 2;
 					else if (item.z < -larguraAltura) item.z = -larguraAltura + 2;
+					
+					if (item.x < -comprimento - 5) item.visible = false;
+					else item.visible = true;
 				}
 			}
 			

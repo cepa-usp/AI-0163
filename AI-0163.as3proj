@@ -18,6 +18,8 @@
   <classpaths>
     <class path="src" />
     <class path="lib" />
+    <class path="..\cepa-lib\AS3\src" />
+    <class path="..\cepa-framework" />
   </classpaths>
   <!-- Build options -->
   <build>
@@ -54,8 +56,9 @@
   <libraryPaths>
     <element path="lib\away3d-core-fp11_4_0_7_gold.swc" />
     <element path="lib\components.swc" />
-    <element path="lib\as3corelib.swc" />
-    <element path="lib\Botoes.swc" />
+    <element path="..\cepa-framework\includes\as3corelib.swc" />
+    <element path="..\cepa-framework\includes\menuMoldura.swc" />
+    <element path="..\cepa-framework\includes\ui.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>

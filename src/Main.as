@@ -7,8 +7,10 @@ package
 	import away3d.loaders.Loader3D;
 	import away3d.materials.ColorMaterial;
 	import away3d.primitives.PlaneGeometry;
+	import cepa.ai.AI;
 	import cepa.utils.Cronometer;
 	import fl.controls.Slider;
+	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
@@ -53,6 +55,7 @@ package
 		private var camadaEletrons:CamadaEletrons;
 		private var modeloLente:Modelo3d;
 		private var baseModeloLamina:Mesh;
+		private var layerAtividade:Sprite;
 		
 		private var distanceObject:DistanceObject = new DistanceObject();
 		
@@ -163,11 +166,22 @@ package
 		
 		private var animationMenu:AnimationMenu;
 		
+		private var ai:AI;
+		
 		private function init2(e:Event = null):void 
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			// entry point
 			scrollRect = rect;
+			
+			layerAtividade = new Sprite();
+			addChild(layerAtividade);
+			//setChildIndex(layerAtividade, 0);
+			
+			ai = new AI(this);
+			ai.container.setMessageTextVisible(false);
+			ai.container.setAboutScreen(new AboutScreen());
+			ai.container.setInfoScreen(new InstScreen());
 			
 			setupCamera();
 			setup3d();
@@ -176,15 +190,15 @@ package
 			cron = new Cronometer();
 			
 			cronometro = new Cronometro();
-			cronometro.x = 15;
-			cronometro.y = 485;
+			cronometro.x = 16;
+			cronometro.y = 484;
 			cronometro.btn_play.addEventListener(MouseEvent.CLICK, startCronometro);
 			cronometro.btn_pause.addEventListener(MouseEvent.CLICK, pauseCronometro);
 			cronometro.btn_reset.addEventListener(MouseEvent.CLICK, resetCronometro);
 			layerAtividade.addChild(cronometro);
 			
 			animationMenu = new AnimationMenu();
-			animationMenu.x = 375;
+			animationMenu.x = 376;
 			animationMenu.y = 445;
 			layerAtividade.addChild(animationMenu);
 			
@@ -198,7 +212,24 @@ package
 			addEventListener(Event.ENTER_FRAME, onEnterFrame);
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDownHandler);
 			
+			removeStats(ai);
+			ai.initialize();
 		}
+		
+		public function removeStats(ai:AI):void {
+            ai.container.optionButtons.removeChild(ai.container.optionButtons.btStatistics)
+            var qtBotoes:int = ai.container.optionButtons.numChildren-1            
+            var mheight:int = -8;
+            for (var i:int = 1; i <= qtBotoes; i++) {                
+                mheight += ai.container.optionButtons.getChildAt(i).height + 6;
+                trace(mheight, ai.container.optionButtons.getChildAt(i))
+                ai.container.optionButtons.getChildAt(i).y = mheight;
+            }
+            mheight += 28
+            ai.container.optionButtons.getChildAt(0).height = mheight;
+			ai.container.optionButtons.y += 38;
+           // trace(qtBotoes, mheight)
+        }
 		
 		private function changeAcel(e:Event):void 
 		{
