@@ -3,9 +3,11 @@ package
 	import away3d.containers.ObjectContainer3D;
 	import away3d.entities.Mesh;
 	import away3d.events.LoaderEvent;
+	import away3d.lights.PointLight;
 	import away3d.loaders.Loader3D;
 	import away3d.loaders.parsers.Parsers;
 	import away3d.materials.ColorMaterial;
+	import away3d.materials.lightpickers.StaticLightPicker;
 	import away3d.primitives.CubeGeometry;
 	import away3d.primitives.SphereGeometry;
 	import flash.net.URLRequest;
@@ -17,6 +19,7 @@ package
 	{
 		private var loader3d:Loader3D;
 		private var source:String = "./resources/model/esfera.3DS";
+		private var meshes:Vector.<Mesh> = new Vector.<Mesh>();
 		
 		public function Eletron() 
 		{
@@ -29,9 +32,10 @@ package
 			
 			
 			//var sphere1:CubeGeometry = new CubeGeometry(2, 2, 2);
-			var sphere:SphereGeometry = new SphereGeometry(1, 4, 4);
+			var sphere:SphereGeometry = new SphereGeometry(1.2, 6, 4);
 			var mesh:Mesh = new Mesh(sphere);
-			mesh.material = new ColorMaterial(0x800000);
+			mesh.material = new ColorMaterial(0xCA0000);
+			meshes.push(mesh);
 			
 			//var sphere1:SphereGeometry = new SphereGeometry(2, 6, 4);
 			//var mesh1:Mesh = new Mesh(sphere1);
@@ -42,6 +46,7 @@ package
 			var mesh2:Mesh = new Mesh(sphere2);
 			mesh2.material = new ColorMaterial(0x00FF00, 0.2);
 			//mesh2.material.alphaPremultiplied = true;
+			meshes.push(mesh2);
 			
 			//var sphere3:SphereGeometry = new SphereGeometry(4, 12, 8);
 			//var mesh3:Mesh = new Mesh(sphere3);
@@ -52,6 +57,7 @@ package
 			var mesh4:Mesh = new Mesh(sphere4);
 			mesh4.material = new ColorMaterial(0x00FF00, 0.15);
 			//mesh4.material.alphaPremultiplied = true;
+			//meshes.push(mesh4);
 			
 			//var sphere2:SphereGeometry = new SphereGeometry(5);
 			//var mesh2:Mesh = new Mesh(sphere2);
@@ -62,6 +68,14 @@ package
 			addChild(mesh2);
 			//addChild(mesh1);
 			addChild(mesh);
+		}
+		
+		public function setLight(light:PointLight):void
+		{
+			for each (var item:Mesh in meshes) 
+			{
+				item.material.lightPicker = new StaticLightPicker([light]);
+			}
 		}
 		
 		private function onResourceComplete(e:LoaderEvent):void 

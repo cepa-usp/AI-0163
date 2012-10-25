@@ -14,8 +14,8 @@ package
 	public class AnimationMenu extends Sprite
 	{
 		private var menuOpen:Boolean = true;
-		private const openY:Number = 445;
-		private const closeY:Number = 495;
+		private var openY:Number = 435;
+		private var closeY:Number = 495;
 		private const tweenOpenCloseTime:Number = 0.5;
 		
 		private var bkg:MovieClip;
@@ -96,6 +96,15 @@ package
 			addChild(openClose);
 			openClose.gotoAndStop("CLOSE");
 			openClose.addEventListener(MouseEvent.CLICK, openCloseFunc);
+		}
+		
+		public function setOpenClosePositions(open:Number, close:Number):void
+		{
+			openY = open;
+			closeY = close;
+			
+			if (menuOpen) this.y = openY;
+			else this.x = closeY;
 		}
 		
 		private function openCloseFunc(e:MouseEvent):void 

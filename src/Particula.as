@@ -3,7 +3,9 @@ package
 	import away3d.containers.ObjectContainer3D;
 	import away3d.entities.Mesh;
 	import away3d.entities.SegmentSet;
+	import away3d.lights.PointLight;
 	import away3d.materials.ColorMaterial;
+	import away3d.materials.lightpickers.StaticLightPicker;
 	import away3d.materials.methods.FogMethod;
 	import away3d.materials.methods.OutlineMethod;
 	import away3d.materials.SegmentMaterial;
@@ -68,9 +70,18 @@ package
 			glow.setScale = 0;
 		}
 		
+		private var light:PointLight;
+		public function setLight(light:PointLight):void
+		{
+			this.light = light;
+			mesh.material.lightPicker = new StaticLightPicker([light]);
+			//glow.setLight(light);
+		}
+		
 		public function set color(cor:uint):void
 		{
 			mesh.material = new ColorMaterial(cor);
+			mesh.material.lightPicker = new StaticLightPicker([light]);
 		}
 		
 		public function get direcao():Vector3D
@@ -109,9 +120,11 @@ package
 		{
 			//glowMesh.visible = true;
 			glow.object.visible = true;
-			mesh.visible = false;
+			//mesh.visible = false;
+			mesh.scaleX = mesh.scaleY = mesh.scaleZ = 0;
 			//lines.visible = true;
 			Actuate.tween(glow, 0.15, {setScale:0.12}).ease(Linear.easeNone).onComplete(fadeOut);
+			Actuate.tween(mesh, 0.15, { scaleX:1, scaleY:1, scaleZ:1 } ).ease(Linear.easeNone);
 			//Actuate.tween(ColorMaterial(glowMesh.material), 0.15, {alpha:0.8}).ease(Linear.easeNone).onComplete(fadeOut);
 			//Actuate.tween(glowMesh, 0.3, { rotationX:720, rotationY:720, rotationZ:720 } ).ease(Linear.easeNone).onComplete(rsetRotation);
 		}
@@ -132,7 +145,7 @@ package
 		private function turnInvisible():void 
 		{
 			//lines.visible = false;
-			mesh.visible = true;
+			//mesh.visible = true;
 			//glowMesh.visible = false;
 			glow.object.visible = false;
 		}

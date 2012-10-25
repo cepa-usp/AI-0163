@@ -4,6 +4,7 @@ package
 	import away3d.containers.Scene3D;
 	import away3d.containers.View3D;
 	import away3d.entities.Mesh;
+	import away3d.lights.PointLight;
 	import away3d.loaders.Loader3D;
 	import away3d.materials.ColorMaterial;
 	import away3d.primitives.PlaneGeometry;
@@ -199,7 +200,7 @@ package
 			
 			animationMenu = new AnimationMenu();
 			animationMenu.x = 376;
-			animationMenu.y = 445;
+			animationMenu.setOpenClosePositions(440, 495);
 			layerAtividade.addChild(animationMenu);
 			
 			animationMenu.timeControl.addEventListener(Event.CHANGE, changeTime);
@@ -301,6 +302,7 @@ package
 			scaleRatio.scale(rasterWidth / cameraWidth, rasterHeight / cameraHeight);
 		}
 		
+		private var mainLight:PointLight;
 		private function setup3d():void
 		{
 			var markerSysConf:FLARMarkerSystemConfig = new FLARMarkerSystemConfig(getSketchFile(cameraIndex), rasterWidth, rasterHeight);
@@ -311,6 +313,18 @@ package
 			view3d = new View3D(new Scene3D(), markerSys.getAway3DCamera());
 			view3d.width = rect.width;
 			view3d.height = rect.height;
+			
+			mainLight = new PointLight();
+			mainLight.x = 0;
+			mainLight.y = 500;
+			mainLight.z = -500;
+			mainLight.color = 0xFFFFFF;
+			//mainLight.ambientColor = 0x008000;
+			//mainLight.ambient = 2;
+			mainLight.radius = 400;
+			view3d.scene.addChild(mainLight);
+			
+			camadaEletrons.setLight(mainLight);
 			
 			view3d.background = new FLARWebCamTexture(cameraWidth, cameraHeight);
 			

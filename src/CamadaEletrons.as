@@ -2,6 +2,7 @@ package
 {
 	import away3d.containers.ObjectContainer3D;
 	import away3d.entities.Mesh;
+	import away3d.lights.PointLight;
 	import away3d.materials.ColorMaterial;
 	import away3d.primitives.CylinderGeometry;
 	import away3d.primitives.PlaneGeometry;
@@ -30,7 +31,7 @@ package
 		public var velMult:Number = 1;
 		public var cubo:WireframeCube;
 		
-		private var cores:Array = [0x004000, 0x00D700];
+		private var cores:Array = [0x006600, 0x00D700];
 		private var corAtual:int = 0;
 		private var timerToChangeColor:Timer = new Timer(25 * 1000);
 		
@@ -275,6 +276,23 @@ package
 			aceleracao.x = ax;
 			aceleracao.y = ay;
 			aceleracao.z = az;
+		}
+		
+		public function setLight(light:PointLight):void
+		{
+			for each (var item:Particula in particulas) 
+			{
+				item.setLight(light);
+			}
+			
+			for each (var arr:Vector.<Eletron> in eletrons) 
+			{
+				for each (var item2:Eletron in arr) 
+				{
+					item2.setLight(light);
+				}
+			}
+			
 		}
 		
 		private var aceleracao:Vector3D = new Vector3D(15, 0, 0);
