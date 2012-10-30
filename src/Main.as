@@ -10,6 +10,7 @@ package
 	import away3d.primitives.PlaneGeometry;
 	import cepa.ai.AI;
 	import cepa.utils.Cronometer;
+	import com.eclecticdesignstudio.motion.Actuate;
 	import fl.controls.Slider;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -94,7 +95,8 @@ package
 			marker2.fileId = setSketchFile(marker2.source, URLLoaderDataFormat.TEXT);
 			marker2.modelo = modelo;
 			marker2.transform.appendRotation(-180, new Vector3D(1, 0, 0));
-			marker2.transform.appendTranslation(0, larguraAlturaModelo/2, -largura/2);
+			marker2.transform.appendTranslation(0, larguraAlturaModelo / 2, -largura / 2);
+			//marker2.transform.appendScale(3, 3, 3);
 			
 			var marker3:FlarMark = new FlarMark("./resources/marker/lado3.pat", markerWH);
 			marker3.fileId = setSketchFile(marker3.source, URLLoaderDataFormat.TEXT);
@@ -152,8 +154,10 @@ package
 		{
 			if (cron.isRunning()) {
 				e.particula.blink();
-				var pop:Pop = new Pop();
-				pop.play();
+				if(tocarSom){
+					var pop:Pop = new Pop();
+					pop.play();
+				}
 			}
 		}
 		
@@ -191,21 +195,27 @@ package
 			cron = new Cronometer();
 			
 			cronometro = new Cronometro();
-			cronometro.x = 16;
-			cronometro.y = 484;
+			cronometro.x = 10;
+			cronometro.y = 10;
 			cronometro.btn_play.addEventListener(MouseEvent.CLICK, startCronometro);
 			cronometro.btn_pause.addEventListener(MouseEvent.CLICK, pauseCronometro);
 			cronometro.btn_reset.addEventListener(MouseEvent.CLICK, resetCronometro);
+			cronometro.openClose.addEventListener(MouseEvent.CLICK, openCloseCron);
+			cronometro.openClose.gotoAndStop("CLOSE");
+			cronometro.openClose.buttonMode = true;
 			layerAtividade.addChild(cronometro);
 			
 			animationMenu = new AnimationMenu();
-			animationMenu.x = 376;
-			animationMenu.setOpenClosePositions(440, 495);
+			animationMenu.x = 10;
+			animationMenu.y = 85;
 			layerAtividade.addChild(animationMenu);
 			
 			animationMenu.timeControl.addEventListener(Event.CHANGE, changeTime);
 			animationMenu.acelControl.addEventListener(Event.CHANGE, changeAcel);
+			animationMenu.scaleControl.addEventListener(Event.CHANGE, changeScale);
 			animationMenu.wireOnOff.addEventListener(MouseEvent.CLICK, cubeOnOff);
+			animationMenu.soundOnOff.addEventListener(MouseEvent.CLICK, soundOnOff);
+			animationMenu.modelOnOff.addEventListener(MouseEvent.CLICK, modelOnOff);
 			
 			layerAtividade.setChildIndex(cronometro, layerAtividade.numChildren - 1);
 			//layerAtividade.setChildIndex(timeControl, layerAtividade.numChildren - 1);
@@ -215,6 +225,18 @@ package
 			
 			removeStats(ai);
 			ai.initialize();
+		}
+		
+		private function openCloseCron(e:MouseEvent):void 
+		{
+			if (cronometro.x < 0) {
+				Actuate.tween(cronometro, 0.5, { x:10 } );
+				cronometro.openClose.gotoAndStop("CLOSE");
+			}
+			else {
+				Actuate.tween(cronometro, 0.5, { x: -100 } );
+				cronometro.openClose.gotoAndStop("OPEN");
+			}
 		}
 		
 		public function removeStats(ai:AI):void {
@@ -232,9 +254,32 @@ package
            // trace(qtBotoes, mheight)
         }
 		
+		private function changeTime(e:Event):void 
+		{
+			camadaEletrons.velMult = animationMenu.timeControl.value;
+		}
+		
 		private function changeAcel(e:Event):void 
 		{
 			camadaEletrons.setAceleracao(animationMenu.acelControl.value, 0, 0);
+		}
+		
+		private var currentScale:Number = 1;
+		private function changeScale(e:Event):void
+		{
+			var newSlace:Number = animationMenu.scaleControl.value;
+			for each (var item:FlarMark in marcas) 
+			{
+				if (item != markerBase) {
+					item.transform.appendScale(1/currentScale, 1/currentScale, 1/currentScale);
+					item.transform.appendScale(newSlace, newSlace, newSlace);
+					//item.transform.appendScale();
+					//item.modelo.object.scaleX = newSlace;
+					//item.modelo.object.scaleY = newSlace;
+					//item.modelo.object.scaleZ = newSlace;
+				}
+			}
+			currentScale = newSlace;
 		}
 		
 		private function cubeOnOff(e:MouseEvent):void 
@@ -245,6 +290,33 @@ package
 			}else {
 				animationMenu.wireOnOff.gotoAndStop(1);
 				camadaEletrons.cubo.visible = true;
+			}
+		}
+		
+		private var tocarSom:Boolean = true;
+		private function soundOnOff(e:MouseEvent):void 
+		{
+			if (animationMenu.soundOnOff.currentFrame == 1) {
+				animationMenu.soundOnOff.gotoAndStop(2);
+				tocarSom = false;
+			}else {
+				animationMenu.soundOnOff.gotoAndStop(1);
+				tocarSom = true;
+			}
+		}
+		
+		private var permitirModelo:Boolean = true;
+		private function modelOnOff(e:MouseEvent):void 
+		{
+			if (animationMenu.modelOnOff.currentFrame == 1) {
+				animationMenu.modelOnOff.gotoAndStop(2);
+				permitirModelo = false;
+				if (cron.isRunning()) {
+					pauseCronometro(null);
+				}
+			}else {
+				animationMenu.modelOnOff.gotoAndStop(1);
+				permitirModelo = true;
 			}
 		}
 		
@@ -262,6 +334,7 @@ package
 		private var maxCron:Number = 999;
 		private function startCronometro(e:MouseEvent):void 
 		{
+			if (!permitirModelo) return;
 			if (cron.read() / 1000 >= maxCron) return;
 			cron.start();
 			camadaEletrons.counting = true;
@@ -284,11 +357,6 @@ package
 			cronometro.btn_play.visible = true;
 			cronometro.display.text = "0,0";
 			cronometro.counter.text = "0";
-		}
-		
-		private function changeTime(e:Event):void 
-		{
-			camadaEletrons.velMult = animationMenu.timeControl.value;
 		}
 		
 		private function setupCamera():void 
@@ -406,7 +474,8 @@ package
 				if (marcaStage == markerBase) baseModeloLamina.visible = true;
 				else baseModeloLamina.visible = false;
 				
-				marcaStage.modelo.object.visible = true;
+				if (permitirModelo) marcaStage.modelo.object.visible = true;
+				else marcaStage.modelo.object.visible = false;
 				var resultMat:Matrix3D = new Matrix3D();
 				markerSys.getAway3dMarkerMatrix(marcaStage.markerId, resultMat);
 				marcaStage.modelo.object.transform = resultMat;
