@@ -27,6 +27,7 @@ package
 		private var glowMesh:Mesh;
 		private var lines:SegmentSet;
 		private var glow:Modelo3d;
+		//private var glow:Mesh;
 		
 		public var cron:Number = 0;
 		
@@ -68,9 +69,16 @@ package
 			addChild(glow.object);
 			glow.object.visible = false;
 			glow.setScale = 0;
+			
+			//var sphere2:SphereGeometry = new SphereGeometry(2.5, 8, 6);
+			//glow = new Mesh(sphere2, new ColorMaterial(0xFFFFFF));
+			//addChild(glow);
+			//glow.visible = false;
+			//glow.scaleX = glow.scaleY = glow.scaleZ = 0;
 		}
 		
 		private var light:PointLight;
+		
 		public function setLight(light:PointLight):void
 		{
 			this.light = light;
@@ -120,10 +128,12 @@ package
 		{
 			//glowMesh.visible = true;
 			glow.object.visible = true;
+			//glow.visible = true;
 			//mesh.visible = false;
 			mesh.scaleX = mesh.scaleY = mesh.scaleZ = 0;
 			//lines.visible = true;
 			Actuate.tween(glow, 0.15, {setScale:0.12}).ease(Linear.easeNone).onComplete(fadeOut);
+			//Actuate.tween(glow, 0.15, { scaleX:1, scaleY:1, scaleZ:1 } ).ease(Linear.easeNone).onComplete(fadeOut);
 			Actuate.tween(mesh, 0.15, { scaleX:1, scaleY:1, scaleZ:1 } ).ease(Linear.easeNone);
 			//Actuate.tween(ColorMaterial(glowMesh.material), 0.15, {alpha:0.8}).ease(Linear.easeNone).onComplete(fadeOut);
 			//Actuate.tween(glowMesh, 0.3, { rotationX:720, rotationY:720, rotationZ:720 } ).ease(Linear.easeNone).onComplete(rsetRotation);
@@ -138,6 +148,7 @@ package
 		
 		private function fadeOut():void 
 		{
+			//Actuate.tween(glow, 0.15, { scaleX:0, scaleY:0, scaleZ:0 } ).ease(Linear.easeNone).onComplete(turnInvisible);
 			Actuate.tween(glow, 0.15, { setScale:0} ).ease(Linear.easeNone).onComplete(turnInvisible);
 			//Actuate.tween(ColorMaterial(glowMesh.material), 0.15, { alpha:0} ).ease(Linear.easeNone).onComplete(turnInvisible);
 		}
@@ -148,6 +159,7 @@ package
 			//mesh.visible = true;
 			//glowMesh.visible = false;
 			glow.object.visible = false;
+			//glow.visible = false;
 		}
 		
 	}

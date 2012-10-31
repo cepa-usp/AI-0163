@@ -26,6 +26,7 @@ package
 		private var _wireOnOff:OnOffButton;
 		private var _soundOnOff:OnOffButton;
 		private var _modelOnOff:OnOffButton;
+		private var _fullOnOff:OnOffButton;
 		
 		private var openClose:OpenClose;
 		
@@ -103,26 +104,35 @@ package
 			//scaleText.x = -125 - scaleText.textWidth / 2 - 20;
 			//addChild(scaleText);
 			
+			var onOffX:Number = 84;
 			//Botão do wireframe
 			_wireOnOff = new OnOffButton();
-			_wireOnOff.x = 77;
+			_wireOnOff.x = onOffX;
 			_wireOnOff.y = 160;
 			_wireOnOff.buttonMode = true;
 			addChild(_wireOnOff);
 			
 			//Botão do som
 			_soundOnOff = new OnOffButton();
-			_soundOnOff.x = 77;
+			_soundOnOff.x = onOffX;
 			_soundOnOff.y = 176;
 			_soundOnOff.buttonMode = true;
 			addChild(_soundOnOff);
 			
 			//Botão do modelo
 			_modelOnOff = new OnOffButton();
-			_modelOnOff.x = 77;
+			_modelOnOff.x = onOffX;
 			_modelOnOff.y = 192;
 			_modelOnOff.buttonMode = true;
 			addChild(_modelOnOff);
+			
+			//Botão do fullscreen
+			_fullOnOff = new OnOffButton();
+			_fullOnOff.x = onOffX;
+			_fullOnOff.y = 208;
+			_fullOnOff.buttonMode = true;
+			_fullOnOff.gotoAndStop(2);
+			addChild(_fullOnOff);
 			
 			//var wireText:TextField = new TextField();
 			//wireText.selectable = false;
@@ -190,6 +200,11 @@ package
 		public function get modelOnOff():OnOffButton 
 		{
 			return _modelOnOff;
+		}
+		
+		public function get fullOnOff():OnOffButton 
+		{
+			return _fullOnOff;
 		}
 		
 	}

@@ -31,9 +31,10 @@ package
 		public var velMult:Number = 1;
 		public var cubo:WireframeCube;
 		
-		private var cores:Array = [0x006600, 0x00D700];
+		//private var cores:Array = [0x006600, 0x00D700];
+		private var cores:Array = [0x004000, 0x005500, 0x006A00, 0x008000, 0x009500, 0x00AA00, 0x00BF00, 0x00D500, 0x00EA00, 0x00FF00, 0x15FF15, 0x2BFF2B, 0x40FF40, 0x55FF55, 0x6AFF6A];
 		private var corAtual:int = 0;
-		private var timerToChangeColor:Timer = new Timer(25 * 1000);
+		private var timerToChangeColor:Timer = new Timer(1 * 1000);
 		
 		public var particulas:Vector.<Particula> = new Vector.<Particula>();
 		private var timer:Timer;

@@ -35,7 +35,7 @@ package
 			_video = new Video(captureWidth, captureHeight);
 			_video.clear();
 			_video.attachCamera(webcam);
-			//addChild(_video);
+			addChild(_video);
 		}
 		
 		public function get video():Video 

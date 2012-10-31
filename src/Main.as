@@ -13,6 +13,9 @@ package
 	import com.eclecticdesignstudio.motion.Actuate;
 	import fl.controls.Slider;
 	import flash.display.Sprite;
+	import flash.display.StageAlign;
+	import flash.display.StageDisplayState;
+	import flash.display.StageScaleMode;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
@@ -58,6 +61,7 @@ package
 		private var modeloLente:Modelo3d;
 		private var baseModeloLamina:Mesh;
 		private var layerAtividade:Sprite;
+		private var modelo:Modelo3d;
 		
 		private var distanceObject:DistanceObject = new DistanceObject();
 		
@@ -72,8 +76,9 @@ package
 			cameraIndex = setSketchFile(cameraURL, URLLoaderDataFormat.BINARY);
 			
 			//var modelo:Modelo3d = new Modelo3d("./resources/model/earth.3ds");
-			var modelo:Modelo3d = new Modelo3d();
+			modelo = new Modelo3d();
 			camadaEletrons = new CamadaEletrons(15, 150, 10, 20, 90, 10);
+			//camadaEletrons = new CamadaEletrons(15, 10, 10, 20, 2, 10);
 			modelo.object3d = camadaEletrons;
 			//CamadaEletrons(modelo.object3d).startAnimation();
 			camadaEletrons.addEventListener("playSound", playSound);
@@ -122,13 +127,14 @@ package
 			marker6.transform.appendRotation(-90, new Vector3D(0, 0, 1));
 			marker6.transform.appendTranslation( -larguraAlturaModelo / 2, 0, -largura / 2);
 			
-			var geom:PlaneGeometry = new PlaneGeometry(30 * 0.8, 300 * 0.8);
-			var mat:ColorMaterial = new ColorMaterial(0xFFFFFF);
+			var scaleBase:Number = 0.75;
+			var geom:PlaneGeometry = new PlaneGeometry(10, 300 * scaleBase);
+			var mat:ColorMaterial = new ColorMaterial(0xEAEAEA);
 			baseModeloLamina = new Mesh(geom, mat);
 			baseModeloLamina.rotate(new Vector3D(1, 0, 0), 90);
 			baseModeloLamina.rotate(new Vector3D(0, 1, 0), 90);
-			baseModeloLamina.translate(new Vector3D(0, 1, 0), -20);
-			baseModeloLamina.translate(new Vector3D(0, 0, 1), -larguraAlturaModelo/2);
+			baseModeloLamina.translate(new Vector3D(0, 1, 0), -85);
+			//baseModeloLamina.translate(new Vector3D(0, 0, 1), -larguraAlturaModelo/2);
 			
 			markerBase = new FlarMark("./resources/marker/base.pat", markerWH);
 			markerBase.fileId = setSketchFile(markerBase.source, URLLoaderDataFormat.TEXT);
@@ -137,8 +143,9 @@ package
 			baseModeloLamina.visible = false;
 			//markerBase.transform.appendRotation(-90, new Vector3D(0, 1, 0));
 			//markerBase.transform.appendRotation(-90, new Vector3D(0, 0, 1));
-			markerBase.transform.appendTranslation(0, -40, 0);
-			markerBase.transform.appendScale(0.8, 0.8, 0.8);
+			markerBase.transform.appendTranslation(0, -130, 0);
+			markerBase.transform.appendTranslation(0, 0, larguraAlturaModelo);
+			markerBase.transform.appendScale(scaleBase, scaleBase, scaleBase);
 			
 			
 			marcas.push(marker1);
@@ -176,6 +183,8 @@ package
 		private function init2(e:Event = null):void 
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
+			stage.scaleMode = StageScaleMode.NO_SCALE;
+			stage.align = StageAlign.TOP_LEFT;
 			// entry point
 			scrollRect = rect;
 			
@@ -186,7 +195,14 @@ package
 			ai = new AI(this);
 			ai.container.setMessageTextVisible(false);
 			ai.container.setAboutScreen(new AboutScreen());
-			ai.container.setInfoScreen(new InstScreen());
+			var inst:InstScreen = new InstScreen();
+			var rollText:RollText = new RollText();
+			inst.addChild(rollText);
+			rollText.x = -260;
+			rollText.y = -150;
+			var scrollBar:Scrollbar = new Scrollbar(rollText);
+			inst.addChild(scrollBar);
+			ai.container.setInfoScreen(inst);
 			
 			setupCamera();
 			setup3d();
@@ -216,15 +232,33 @@ package
 			animationMenu.wireOnOff.addEventListener(MouseEvent.CLICK, cubeOnOff);
 			animationMenu.soundOnOff.addEventListener(MouseEvent.CLICK, soundOnOff);
 			animationMenu.modelOnOff.addEventListener(MouseEvent.CLICK, modelOnOff);
+			animationMenu.fullOnOff.addEventListener(MouseEvent.CLICK, goFullScreen);
 			
 			layerAtividade.setChildIndex(cronometro, layerAtividade.numChildren - 1);
 			//layerAtividade.setChildIndex(timeControl, layerAtividade.numChildren - 1);
 			//layerAtividade.setChildIndex(wireOnOff, layerAtividade.numChildren - 1);
 			addEventListener(Event.ENTER_FRAME, onEnterFrame);
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDownHandler);
+			stage.addEventListener(Event.RESIZE, onResize);
 			
-			removeStats(ai);
+			//removeStats(ai);
 			ai.initialize();
+			
+			//camadaEletrons = new CamadaEletrons(15, 150, 10, 20, 90, 10);
+			//camadaEletrons.setLight(mainLight);
+			//camadaEletrons.addEventListener("playSound", playSound);
+			//modelo.object3d = camadaEletrons;
+			//addEventListener(Event.ENTER_FRAME, onEnterFrame);
+		}
+		
+		private function goFullScreen(e:MouseEvent):void 
+		{
+			if (stage.displayState == StageDisplayState.NORMAL) {
+				stage.displayState = StageDisplayState.FULL_SCREEN;
+			}else {
+				stage.displayState = StageDisplayState.NORMAL;
+			}
+			onResize(null);
 		}
 		
 		private function openCloseCron(e:MouseEvent):void 
@@ -335,7 +369,7 @@ package
 		private function startCronometro(e:MouseEvent):void 
 		{
 			if (!permitirModelo) return;
-			if (cron.read() / 1000 >= maxCron) return;
+			if (totalTime >= maxCron) return;
 			cron.start();
 			camadaEletrons.counting = true;
 			cronometro.btn_play.visible = false;
@@ -352,6 +386,7 @@ package
 		{
 			cron.stop();
 			cron.reset();
+			totalTime = 0;
 			camadaEletrons.counting = false;
 			camadaEletrons.count = 0;
 			cronometro.btn_play.visible = true;
@@ -399,6 +434,40 @@ package
 			layerAtividade.addChild(view3d);
 		}
 		
+		private var inicialWidth:Number;
+		private var inicialHeight:Number;
+		private function onResize(e:Event):void 
+		{
+			var scale:Number;
+			if (stage.displayState == StageDisplayState.FULL_SCREEN) {
+				animationMenu.fullOnOff.gotoAndStop(1);
+				scale = Math.min(stage.fullScreenHeight / rect.height, stage.fullScreenWidth / rect.width);
+				//var scale:Number = stage.fullScreenHeight / stage.stageHeight;
+				//trace(scale);
+				view3d.width = rect.width * scale;
+				view3d.height = rect.height * scale;
+				this.width = rect.width * scale;
+				this.height = rect.height * scale;
+				
+				//view3d.width = stage.fullScreenWidth;
+				//view3d.height = stage.fullScreenHeight;
+				//this.width = stage.fullScreenWidth;
+				//this.height = stage.fullScreenHeight;
+			}else {
+				animationMenu.fullOnOff.gotoAndStop(2);
+				scale = Math.min(stage.stageHeight / rect.height, stage.stageWidth / rect.width);
+				view3d.width = rect.width * scale;
+				view3d.height = rect.height * scale;
+				this.width = rect.width * scale;
+				this.height = rect.height * scale;
+				
+				//view3d.width = stage.stageWidth;
+				//view3d.height = stage.stageHeight;
+				//this.width = stage.stageWidth;
+				//this.height = stage.stageHeight;
+			}
+		}
+		
 		private function load3dModels():void 
 		{
 			for each (var marca:FlarMark in marcas) 
@@ -411,12 +480,15 @@ package
 			view3d.scene.addChild(distanceObject);
 		}
 		
+		private var totalTime:Number = 0;
 		private function onEnterFrame(e:Event):void 
 		{
 			if (camadaEletrons.counting) {
-				cronometro.display.text = Number(cron.read() / 1000).toFixed(1).replace(".", ",");
+				totalTime += Number((cron.read() / 1000) * animationMenu.timeControl.value);
+				cron.reset();
+				cronometro.display.text = totalTime.toFixed(1).replace(".", ",");
 				cronometro.counter.text = String(camadaEletrons.count);
-				if (cron.read() / 1000 >= maxCron) pauseCronometro(null);
+				if (totalTime >= maxCron) pauseCronometro(null);
 			}
 			
 			arSensor.update_3(camera.video, scaleRatio);
@@ -471,8 +543,17 @@ package
 			
 			for each (var marcaStage:FlarMark in marcasStage) 
 			{
-				if (marcaStage == markerBase) baseModeloLamina.visible = true;
-				else baseModeloLamina.visible = false;
+				if (marcaStage == markerBase) {
+					baseModeloLamina.visible = true;
+					animationMenu.scaleControl.enabled = false;
+					animationMenu.scaleControl.alpha = 0.5;
+					
+				}
+				else {
+					baseModeloLamina.visible = false;
+					animationMenu.scaleControl.enabled = true;
+					animationMenu.scaleControl.alpha = 1;
+				}
 				
 				if (permitirModelo) marcaStage.modelo.object.visible = true;
 				else marcaStage.modelo.object.visible = false;

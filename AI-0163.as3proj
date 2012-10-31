@@ -8,11 +8,10 @@
     <movie fps="30" />
     <movie width="700" />
     <movie height="500" />
-    <movie version="3" />
-    <movie minorVersion="2" />
-    <movie platform="AIR" />
+    <movie version="11" />
+    <movie minorVersion="1" />
+    <movie platform="Flash Player" />
     <movie background="#FFFFFF" />
-    <movie preferredSDK="D:\Projetos\05 - GitHub\AI-0163\flex_sdk_4.6.0.23201\4.6.0" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
@@ -91,7 +90,7 @@
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
-    <option testMovie="Unknown" />
+    <option testMovie="Default" />
   </options>
   <!-- Plugin storage -->
   <storage>
