@@ -193,6 +193,9 @@ package
 			//setChildIndex(layerAtividade, 0);
 			
 			ai = new AI(this);
+			ai.container.optionButtons.addCreditosButton();
+			ai.container.optionButtons.addResetButton();
+			ai.container.optionButtons.addOrientacoesButton();
 			ai.container.setMessageTextVisible(false);
 			ai.container.setAboutScreen(new AboutScreen());
 			var inst:InstScreen = new InstScreen();
